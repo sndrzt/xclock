@@ -144,8 +144,7 @@ static XrmOptionDescRec options[] = {
 #endif
 };
 
-static void quit ( Widget w, XEvent *event, String *params,
-		   Cardinal *num_params );
+static void quit ( Widget w, XEvent *event, String *params, Cardinal *num_params );
 
 static XtActionsRec xclock_actions[] = {
     { "quit",	quit },
@@ -156,8 +155,7 @@ static Atom wm_delete_window;
 /*
  * Report the syntax for calling xclock.
  */
-static void _X_NORETURN
-Syntax(const char *call)
+static void _X_NORETURN Syntax(const char *call)
 {
     fprintf (stderr, "Usage: %s %s", call,
 	    "[-analog] [-bw <pixels>] [-digital] [-brief]\n"
@@ -173,15 +171,13 @@ Syntax(const char *call)
     exit(1);
 }
 
-static void _X_NORETURN
-die(Widget w, XtPointer client_data, XtPointer call_data)
+static void _X_NORETURN die(Widget w, XtPointer client_data, XtPointer call_data)
 {
     XCloseDisplay(XtDisplayOfObject(w));
     exit(0);
 }
 
-static void
-quit(Widget w, XEvent *event, String *params, Cardinal *num_params)
+static void quit(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     Arg arg;
 
@@ -200,16 +196,14 @@ quit(Widget w, XEvent *event, String *params, Cardinal *num_params)
     }
 }
 
-static void
-save(Widget w, XtPointer client_data, XtPointer call_data)
+static void save(Widget w, XtPointer client_data, XtPointer call_data)
 {
     XtCheckpointToken token = (XtCheckpointToken) call_data;
     /* we have nothing to save */
     token->save_success = True;
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     Widget toplevel;
     Arg arg;
@@ -228,8 +222,7 @@ main(int argc, char *argv[])
     }
 #endif
 
-    toplevel = XtOpenApplication(&app_con, "XClock",
-				 options, XtNumber(options), &argc, argv, NULL,
+    toplevel = XtOpenApplication(&app_con, "XClock", options, XtNumber(options), &argc, argv, NULL,
 				 sessionShellWidgetClass, NULL, ZERO);
     if (argc != 1) Syntax(argv[0]);
     XtAddCallback(toplevel, XtNdieCallback, die, NULL);
@@ -240,43 +233,32 @@ main(int argc, char *argv[])
      * This is a hack so that wm_delete_window will do something useful
      * in this single-window application.
      */
-    XtOverrideTranslations(toplevel,
-		    XtParseTranslationTable ("<Message>WM_PROTOCOLS: quit()"));
+    XtOverrideTranslations(toplevel, XtParseTranslationTable ("<Message>WM_PROTOCOLS: quit()"));
 
     XtSetArg(arg, XtNiconPixmap, &icon_pixmap);
     XtGetValues(toplevel, &arg, ONE);
 
     if (icon_pixmap == None) {
-	arg.value = (XtArgVal)XCreateBitmapFromData(XtDisplay(toplevel),
-				       XtScreen(toplevel)->root,
-				       (char *)clock_bits, clock_width, clock_height);
+	arg.value = (XtArgVal)XCreateBitmapFromData(XtDisplay(toplevel), XtScreen(toplevel)->root, (char *)clock_bits, clock_width, clock_height);
 	XtSetValues (toplevel, &arg, ONE);
     }
 
     XtSetArg(arg, XtNiconMask, &icon_pixmap);
     XtGetValues(toplevel, &arg, ONE);
     if (icon_pixmap == None) {
-	arg.value = (XtArgVal)XCreateBitmapFromData(XtDisplay(toplevel),
-				       XtScreen(toplevel)->root,
-				       (char *)clock_mask_bits, clock_mask_width,
-				       clock_mask_height);
+	arg.value = (XtArgVal)XCreateBitmapFromData(XtDisplay(toplevel), XtScreen(toplevel)->root, (char *)clock_mask_bits, clock_mask_width, clock_mask_height);
 	XtSetValues (toplevel, &arg, ONE);
     }
 
     XtCreateManagedWidget ("clock", clockWidgetClass, toplevel, NULL, ZERO);
     XtRealizeWidget (toplevel);
-    wm_delete_window = XInternAtom (XtDisplay(toplevel), "WM_DELETE_WINDOW",
-				    False);
-    (void) XSetWMProtocols (XtDisplay(toplevel), XtWindow(toplevel),
-			    &wm_delete_window, 1);
+    wm_delete_window = XInternAtom (XtDisplay(toplevel), "WM_DELETE_WINDOW", False);
+    (void) XSetWMProtocols (XtDisplay(toplevel), XtWindow(toplevel), &wm_delete_window, 1);
 
 #ifdef HAVE_GETPID
     {
 	unsigned long pid = (unsigned long)getpid();
-	XChangeProperty(XtDisplay(toplevel), XtWindow(toplevel),
-			XInternAtom(XtDisplay(toplevel), "_NET_WM_PID", False),
-			XA_CARDINAL, 32, PropModeReplace,
-			(unsigned char *) &pid, 1);
+	XChangeProperty(XtDisplay(toplevel), XtWindow(toplevel), XInternAtom(XtDisplay(toplevel), "_NET_WM_PID", False), XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &pid, 1);
     }
 #endif
 
